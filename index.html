@@ -92,21 +92,25 @@
         };
     }
 
-    // 分別定義 boy.png 與 girl.png 的初始位置
-    // boy.png: { x: 0.38, y: 0.62 }
-    // girl.png: { x: 0.45, y: 0.69 }
+    // 運筆路徑整體上移 2% (Y 軸全部減 0.02)
+    // 小朋友初始位置同步上移 2%：
+    // boy.png: { x: 0.38, y: 0.62 - 0.02 = 0.60 }
+    // girl.png: { x: 0.45, y: 0.69 - 0.02 = 0.67 }
     const baseStarts = [
-        { x: 0.38, y: 0.62 }, // boy.png (Level 0)
-        { x: 0.45, y: 0.69 }, // girl.png (Level 1)
-        { x: 0.38, y: 0.62 }, // boy.png (Level 2)
-        { x: 0.45, y: 0.69 }, // girl.png (Level 3)
-        { x: 0.38, y: 0.62 }  // boy.png (Level 4)
+        { x: 0.38, y: 0.60 }, // boy.png (Level 0)
+        { x: 0.45, y: 0.67 }, // girl.png (Level 1)
+        { x: 0.38, y: 0.60 }, // boy.png (Level 2)
+        { x: 0.45, y: 0.67 }, // girl.png (Level 3)
+        { x: 0.38, y: 0.60 }  // boy.png (Level 4)
     ];
 
     const pStarts = baseStarts.map(pos => rotNorm(pos.x, pos.y));
     
-    const baseCtrl  = { x: 0.51, y: 0.77 };
-    const baseEnd   = { x: 0.65, y: 0.88 };
+    // 路徑中間點（控制點）上移 2% 後再稍向左下移 2% (X 減 0.02, Y 加 0.02)
+    // 原本 baseCtrl: { x: 0.51, y: 0.77 } -> 上移 2% 變 0.75 -> 左下移 2% 變 x: 0.49, y: 0.77
+    const baseCtrl  = { x: 0.49, y: 0.77 }; 
+    // 終點隨運筆路徑整體上移 2% (0.88 - 0.02 = 0.86)
+    const baseEnd   = { x: 0.65, y: 0.86 };
 
     const pCtrl  = rotNorm(baseCtrl.x, baseCtrl.y);
     const pEnd   = rotNorm(baseEnd.x, baseEnd.y);
@@ -130,11 +134,9 @@
     
     function updatePlayerSize() {
         if (config.levels[currentLevel] === 'girl.png') {
-            // girl.png 放大 20% (380px * 1.2 = 456px)
             player.style.width = '456px';
             player.style.height = '456px';
         } else {
-            // boy.png 保持 380px
             player.style.width = '380px';
             player.style.height = '380px';
         }
