@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>運筆遊戲:捺(滑滑梯) </title>
+    <title>小朋友滑滑梯練運筆:捺</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
         body { background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; font-family: sans-serif; }
@@ -92,18 +92,27 @@
         };
     }
 
-    // 小朋友起點上移 5% (0.67 - 0.05 = 0.62)、左移 3% (0.44 - 0.03 = 0.41)
-    const baseStart = { x: 0.41, y: 0.62 };
+    // 分別定義 boy.png 與 girl.png 的初始位置
+    // boy.png: 左移3% (0.41 - 0.03 = 0.38), 上移5% (0.62)
+    // girl.png: 右移3% (0.44 + 0.03 = 0.47), 下移5% (0.67 + 0.05 = 0.72)
+    const baseStarts = [
+        { x: 0.38, y: 0.62 }, // boy.png (Level 0)
+        { x: 0.47, y: 0.72 }, // girl.png (Level 1)
+        { x: 0.38, y: 0.62 }, // boy.png (Level 2)
+        { x: 0.47, y: 0.72 }, // girl.png (Level 3)
+        { x: 0.38, y: 0.62 }  // boy.png (Level 4)
+    ];
+
+    const pStarts = baseStarts.map(pos => rotNorm(pos.x, pos.y));
+    
     const baseCtrl  = { x: 0.51, y: 0.77 };
     const baseEnd   = { x: 0.65, y: 0.88 };
 
-    const pStart = rotNorm(baseStart.x, baseStart.y);
     const pCtrl  = rotNorm(baseCtrl.x, baseCtrl.y);
     const pEnd   = rotNorm(baseEnd.x, baseEnd.y);
 
     const config = {
         levels: ['boy.png', 'girl.png', 'boy.png', 'girl.png', 'boy.png'],
-        startX: pStart.x, startY: pStart.y,
         ctrlX:  pCtrl.x,  ctrlY:  pCtrl.y,
         endX:   pEnd.x,   endY:   pEnd.y,
         hitRadius: 45,
@@ -124,7 +133,8 @@
         guideCanvas.width = rect.width; guideCanvas.height = rect.height;
         drawCanvas.width = rect.width; drawCanvas.height = rect.height;
         
-        startPx = {x: rect.width * config.startX, y: rect.height * config.startY};
+        const curStart = pStarts[currentLevel];
+        startPx = {x: rect.width * curStart.x, y: rect.height * curStart.y};
         ctrlPx  = {x: rect.width * config.ctrlX,  y: rect.height * config.ctrlY};
         endPx   = {x: rect.width * config.endX,   y: rect.height * config.endY};
 
@@ -138,7 +148,8 @@
     function drawGuidePath() {
         guideCtx.clearRect(0, 0, guideCanvas.width, guideCanvas.height);
         guideCtx.beginPath();
-        guideCtx.moveTo(startPx.x, startPx.y);
+        const curStart = pStarts[currentLevel];
+        guideCtx.moveTo(guideCanvas.width * curStart.x, guideCanvas.height * curStart.y);
         guideCtx.quadraticCurveTo(ctrlPx.x, ctrlPx.y, endPx.x, endPx.y);
         guideCtx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
         guideCtx.lineWidth = 42; 
@@ -148,7 +159,12 @@
 
     function loadLevel() {
         player.src = config.levels[currentLevel];
+        const rect = container.getBoundingClientRect();
+        const curStart = pStarts[currentLevel];
+        startPx = {x: rect.width * curStart.x, y: rect.height * curStart.y};
+
         drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+        drawGuidePath();
         resetPlayer();
         overlay.classList.remove('show');
     }
