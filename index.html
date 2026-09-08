@@ -93,13 +93,13 @@
     }
 
     // 分別定義 boy.png 與 girl.png 的初始位置
-    // boy.png: 左移3% (0.41 - 0.03 = 0.38), 上移5% (0.62)
-    // girl.png: 右移3% (0.44 + 0.03 = 0.47), 下移5% (0.67 + 0.05 = 0.72)
+    // boy.png: 左移3%, 上移5% -> { x: 0.38, y: 0.62 }
+    // girl.png: 修正為上移3% (0.72 - 0.03 = 0.69), 左移2% (0.47 - 0.02 = 0.45) -> { x: 0.45, y: 0.69 }
     const baseStarts = [
         { x: 0.38, y: 0.62 }, // boy.png (Level 0)
-        { x: 0.47, y: 0.72 }, // girl.png (Level 1)
+        { x: 0.45, y: 0.69 }, // girl.png (Level 1)
         { x: 0.38, y: 0.62 }, // boy.png (Level 2)
-        { x: 0.47, y: 0.72 }, // girl.png (Level 3)
+        { x: 0.45, y: 0.69 }, // girl.png (Level 3)
         { x: 0.38, y: 0.62 }  // boy.png (Level 4)
     ];
 
