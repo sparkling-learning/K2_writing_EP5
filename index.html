@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>運筆遊戲:捺(滑滑梯)</title>
-      <style>
+    <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
         body { background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; font-family: sans-serif; }
         
@@ -92,25 +92,26 @@
         };
     }
 
-    // 頁一、三、五 (boy.png)：左邊起點向右移2% (0.37 + 0.02 = 0.39) -> { x: 0.39, y: 0.64 }
-    // 頁二、四 (girl.png)：位置下移4% (0.64 + 0.04 = 0.68) -> { x: 0.43, y: 0.68 }
+    // 頁一、三、五 (boy.png)：起點向右移2% (0.39 + 0.02 = 0.41)
+    // 頁二、四 (girl.png)：左端延長2% (0.43 - 0.02 = 0.41)
+    // 確保 boy 與 girl 的初始位置 (baseStarts) 與運筆路徑的起點完全一致
     const baseStarts = [
-        { x: 0.39, y: 0.64 }, // 頁一 (Boy) - 右移2%
-        { x: 0.43, y: 0.68 }, // 頁二 (Girl) - 下移4%
-        { x: 0.39, y: 0.64 }, // 頁三 (Boy) - 右移2%
-        { x: 0.43, y: 0.68 }, // 頁四 (Girl) - 下移4%
-        { x: 0.39, y: 0.64 }  // 頁五 (Boy) - 右移2%
+        { x: 0.41, y: 0.64 }, // 頁一 (Boy)
+        { x: 0.41, y: 0.68 }, // 頁二 (Girl)
+        { x: 0.41, y: 0.64 }, // 頁三 (Boy)
+        { x: 0.41, y: 0.68 }, // 頁四 (Girl)
+        { x: 0.41, y: 0.64 }  // 頁五 (Boy)
     ];
 
     const pStarts = baseStarts.map(pos => rotNorm(pos.x, pos.y));
     
-    // 中間點維持不變
+    // 頁一、三、五的中間點向右移2%配合起點
     const baseCtrls = [
-        { x: 0.47, y: 0.79 }, // 頁一 (Boy)
+        { x: 0.49, y: 0.79 }, // 頁一 (Boy)
         { x: 0.48, y: 0.78 }, // 頁二 (Girl)
-        { x: 0.47, y: 0.79 }, // 頁三 (Boy)
+        { x: 0.49, y: 0.79 }, // 頁三 (Boy)
         { x: 0.48, y: 0.78 }, // 頁四 (Girl)
-        { x: 0.47, y: 0.79 }  // 頁五 (Boy)
+        { x: 0.49, y: 0.79 }  // 頁五 (Boy)
     ];
 
     const pCtrls = baseCtrls.map(pos => rotNorm(pos.x, pos.y));
