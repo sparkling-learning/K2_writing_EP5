@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>小朋友滑滑梯練運筆:捺</title>
+    <title>運筆遊戲:捺(滑滑梯)</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
         body { background-color: #111; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; font-family: sans-serif; }
@@ -48,9 +48,9 @@
         }
         @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
         
-        /* 小朋友圖尺寸：380px (放大1倍) */
+        /* 小朋友圖基本設定（尺寸由 JavaScript 根據角色動態調整） */
         #player { 
-            position: absolute; width: 380px; height: 380px; transform: translate(-50%, -50%); 
+            position: absolute; transform: translate(-50%, -50%); 
             cursor: grab; z-index: 20; touch-action: none; object-fit: contain;
             filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
         }
@@ -93,8 +93,8 @@
     }
 
     // 分別定義 boy.png 與 girl.png 的初始位置
-    // boy.png: 左移3%, 上移5% -> { x: 0.38, y: 0.62 }
-    // girl.png: 修正為上移3% (0.72 - 0.03 = 0.69), 左移2% (0.47 - 0.02 = 0.45) -> { x: 0.45, y: 0.69 }
+    // boy.png: { x: 0.38, y: 0.62 }
+    // girl.png: { x: 0.45, y: 0.69 }
     const baseStarts = [
         { x: 0.38, y: 0.62 }, // boy.png (Level 0)
         { x: 0.45, y: 0.69 }, // girl.png (Level 1)
@@ -128,6 +128,18 @@
 
     let startPx = {x: 0, y: 0}, ctrlPx = {x: 0, y: 0}, endPx = {x: 0, y: 0};
     
+    function updatePlayerSize() {
+        if (config.levels[currentLevel] === 'girl.png') {
+            // girl.png 放大 20% (380px * 1.2 = 456px)
+            player.style.width = '456px';
+            player.style.height = '456px';
+        } else {
+            // boy.png 保持 380px
+            player.style.width = '380px';
+            player.style.height = '380px';
+        }
+    }
+
     function resizeAndInit() {
         const rect = container.getBoundingClientRect();
         guideCanvas.width = rect.width; guideCanvas.height = rect.height;
@@ -141,6 +153,7 @@
         targetGlow.style.left = `${endPx.x}px`;
         targetGlow.style.top = `${endPx.y}px`;
 
+        updatePlayerSize();
         drawGuidePath();
         resetPlayer();
     }
@@ -159,6 +172,7 @@
 
     function loadLevel() {
         player.src = config.levels[currentLevel];
+        updatePlayerSize();
         const rect = container.getBoundingClientRect();
         const curStart = pStarts[currentLevel];
         startPx = {x: rect.width * curStart.x, y: rect.height * curStart.y};
