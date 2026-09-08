@@ -92,33 +92,34 @@
         };
     }
 
-    // 運筆路徑整體上移 2% (Y 軸全部減 0.02)
-    // 小朋友初始位置同步上移 2%：
-    // boy.png: { x: 0.38, y: 0.62 - 0.02 = 0.60 }
-    // girl.png: { x: 0.45, y: 0.69 - 0.02 = 0.67 }
+    // 頁一、三、五 (boy.png，索引 0, 2, 4)：左端縮短5%
+    // 頁二、四 (girl.png，索引 1, 3)：左端延長5%
     const baseStarts = [
-        { x: 0.38, y: 0.60 }, // boy.png (Level 0)
-        { x: 0.45, y: 0.67 }, // girl.png (Level 1)
-        { x: 0.38, y: 0.60 }, // boy.png (Level 2)
-        { x: 0.45, y: 0.67 }, // girl.png (Level 3)
-        { x: 0.38, y: 0.60 }  // boy.png (Level 4)
+        { x: 0.41, y: 0.62 }, // 頁一 (Boy) - 縮短
+        { x: 0.40, y: 0.61 }, // 頁二 (Girl) - 延長
+        { x: 0.41, y: 0.62 }, // 頁三 (Boy) - 縮短
+        { x: 0.40, y: 0.61 }, // 頁四 (Girl) - 延長
+        { x: 0.41, y: 0.62 }  // 頁五 (Boy) - 縮短
     ];
 
     const pStarts = baseStarts.map(pos => rotNorm(pos.x, pos.y));
     
-    // 路徑中間點（控制點）上移 2% 後再稍向左下移 2% (X 減 0.02, Y 加 0.02)
-    // 原本 baseCtrl: { x: 0.51, y: 0.77 } -> 上移 2% 變 0.75 -> 左下移 2% 變 x: 0.49, y: 0.77
-    const baseCtrl  = { x: 0.49, y: 0.77 }; 
-    // 終點隨運筆路徑整體上移 2% (0.88 - 0.02 = 0.86)
-    const baseEnd   = { x: 0.65, y: 0.86 };
+    // 頁一、三、五的中間點向左下移3% (x 減 0.03, y 加 0.03) -> { x: 0.46, y: 0.80 }
+    // 頁二、四的中間點維持標準 -> { x: 0.49, y: 0.77 }
+    const baseCtrls = [
+        { x: 0.46, y: 0.80 }, // 頁一 (Boy)
+        { x: 0.49, y: 0.77 }, // 頁二 (Girl)
+        { x: 0.46, y: 0.80 }, // 頁三 (Boy)
+        { x: 0.49, y: 0.77 }, // 頁四 (Girl)
+        { x: 0.46, y: 0.80 }  // 頁五 (Boy)
+    ];
 
-    const pCtrl  = rotNorm(baseCtrl.x, baseCtrl.y);
-    const pEnd   = rotNorm(baseEnd.x, baseEnd.y);
+    const pCtrls = baseCtrls.map(pos => rotNorm(pos.x, pos.y));
+    const baseEnd = { x: 0.65, y: 0.86 };
+    const pEnd = rotNorm(baseEnd.x, baseEnd.y);
 
     const config = {
         levels: ['boy.png', 'girl.png', 'boy.png', 'girl.png', 'boy.png'],
-        ctrlX:  pCtrl.x,  ctrlY:  pCtrl.y,
-        endX:   pEnd.x,   endY:   pEnd.y,
         hitRadius: 45,
         allowedDeviation: 32 
     };
@@ -142,16 +143,20 @@
         }
     }
 
+    function updateLevelCoords(rect) {
+        const curStart = pStarts[currentLevel];
+        const curCtrl = pCtrls[currentLevel];
+        startPx = { x: rect.width * curStart.x, y: rect.height * curStart.y };
+        ctrlPx  = { x: rect.width * curCtrl.x,  y: rect.height * curCtrl.y };
+        endPx   = { x: rect.width * pEnd.x,     y: rect.height * pEnd.y };
+    }
+
     function resizeAndInit() {
         const rect = container.getBoundingClientRect();
         guideCanvas.width = rect.width; guideCanvas.height = rect.height;
         drawCanvas.width = rect.width; drawCanvas.height = rect.height;
         
-        const curStart = pStarts[currentLevel];
-        startPx = {x: rect.width * curStart.x, y: rect.height * curStart.y};
-        ctrlPx  = {x: rect.width * config.ctrlX,  y: rect.height * config.ctrlY};
-        endPx   = {x: rect.width * config.endX,   y: rect.height * config.endY};
-
+        updateLevelCoords(rect);
         targetGlow.style.left = `${endPx.x}px`;
         targetGlow.style.top = `${endPx.y}px`;
 
@@ -163,8 +168,7 @@
     function drawGuidePath() {
         guideCtx.clearRect(0, 0, guideCanvas.width, guideCanvas.height);
         guideCtx.beginPath();
-        const curStart = pStarts[currentLevel];
-        guideCtx.moveTo(guideCanvas.width * curStart.x, guideCanvas.height * curStart.y);
+        guideCtx.moveTo(startPx.x, startPx.y);
         guideCtx.quadraticCurveTo(ctrlPx.x, ctrlPx.y, endPx.x, endPx.y);
         guideCtx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
         guideCtx.lineWidth = 42; 
@@ -176,8 +180,7 @@
         player.src = config.levels[currentLevel];
         updatePlayerSize();
         const rect = container.getBoundingClientRect();
-        const curStart = pStarts[currentLevel];
-        startPx = {x: rect.width * curStart.x, y: rect.height * curStart.y};
+        updateLevelCoords(rect);
 
         drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
         drawGuidePath();
