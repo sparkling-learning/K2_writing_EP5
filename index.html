@@ -48,7 +48,7 @@
         }
         @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
         
-        /* 小朋友圖再放大1倍 (由 190px 增至 380px) */
+        /* 小朋友圖尺寸：380px (放大1倍) */
         #player { 
             position: absolute; width: 380px; height: 380px; transform: translate(-50%, -50%); 
             cursor: grab; z-index: 20; touch-action: none; object-fit: contain;
@@ -78,7 +78,7 @@
 </div>
 
 <script>
-    // 透過數學旋轉公式將運筆路徑整體向左傾斜 5 度，精準對齊旋轉後的滑梯
+    // 透過數學旋轉公式將運筆路徑整體向左傾斜 5 度
     const angle = -5 * Math.PI / 180;
     const cx = 0.50;
     const cy = 0.705;
@@ -92,7 +92,8 @@
         };
     }
 
-    const baseStart = { x: 0.44, y: 0.67 };
+    // 小朋友起點上移 5% (0.67 - 0.05 = 0.62)、左移 3% (0.44 - 0.03 = 0.41)
+    const baseStart = { x: 0.41, y: 0.62 };
     const baseCtrl  = { x: 0.51, y: 0.77 };
     const baseEnd   = { x: 0.65, y: 0.88 };
 
